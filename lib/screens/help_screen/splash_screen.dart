@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:myapp/db/db_helper.dart';
 import 'package:myapp/screens/main_screen/main_screen.dart';
 import 'package:myapp/utils/color.dart';
 import 'package:myapp/widgets/our_elevated_button.dart';
@@ -8,37 +10,38 @@ import 'package:myapp/widgets/our_sized_box.dart';
 import 'package:myapp/widgets/our_spinner.dart';
 import 'package:page_transition/page_transition.dart';
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+class HelpScreen extends StatefulWidget {
+  const HelpScreen({Key? key}) : super(key: key);
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<HelpScreen> createState() => _HelpScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  // void completed() {
-  //   Navigator.of(context).pushReplacement(
-  //     MaterialPageRoute(
-  //       builder: (context) => OuterLayerScreen(),
-  //     ),
-  //   );
-  // }
+class _HelpScreenState extends State<HelpScreen> {
+  completed() async {
+    print("Hello World");
+    try {
+      await Hive.box<int>(DatabaseHelper.authenticationDB).put("state", 1);
+    } catch (e) {
+      print(e);
+    }
+  }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   Timer(const Duration(seconds: 5), completed);
-  // }
+  @override
+  void initState() {
+    super.initState();
+    Timer(const Duration(seconds: 5), () {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        return MainScreen();
+      }));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          // margin: EdgeInsets.symmetric(
-          //   horizontal: ScreenUtil().setSp(10),
-          //   vertical: ScreenUtil().setSp(10),
-          // ),
           constraints: const BoxConstraints.expand(),
           decoration: const BoxDecoration(
             image: DecorationImage(
@@ -74,14 +77,15 @@ class _SplashScreenState extends State<SplashScreen> {
                 OurSizedBox(),
                 OurElevatedButton(
                   title: "Skip",
-                  function: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                        child: MainScreen(),
-                        type: PageTransitionType.bottomToTop,
-                      ),
-                    );
+                  function: () async {
+                    await completed();
+                    // Navigator.push(
+                    //   context,
+                    //   PageTransition(
+                    //     child: MainScreen(),
+                    //     type: PageTransitionType.bottomToTop,
+                    //   ),
+                    // );
                   },
                 ),
                 SizedBox(
